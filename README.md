@@ -1,5 +1,9 @@
 # IPTV [![update](https://github.com/iptv-org/iptv/actions/workflows/update.yml/badge.svg)](https://github.com/iptv-org/iptv/actions/workflows/update.yml)
 
+## EL JEFFE edition
+
+See [ELJEFFE.md](ELJEFFE.md) for the expanded resource collection and browser integration. Upstream content is preserved below.
+
 Collection of publicly available IPTV (Internet Protocol television) channels from all over the world.
 
 ## Table of contents

@@ -1,0 +1,8 @@
+(function(root){
+'use strict';
+const safe=u=>{try{const x=new URL(u);return ['http:','https:'].includes(x.protocol)&&!x.username&&!x.password?x.href:''}catch{return ''}};
+function join(channels,streams){if(!Array.isArray(channels)||!Array.isArray(streams))throw Error('Expected channel and stream arrays');const map=new Map(channels.filter(c=>typeof c.id==='string'&&typeof c.name==='string').map(c=>[c.id,{id:c.id,name:c.name,country:c.country||'',categories:c.categories||[],is_nsfw:c.is_nsfw===true,website:safe(c.website),streams:[]}]));let unmatched=0;const seen=new Set();for(const s of streams){const url=safe(s.url);if(!url||seen.has(s.channel+'|'+url))continue;seen.add(s.channel+'|'+url);const c=map.get(s.channel);if(!c){unmatched++;continue}c.streams.push({url,quality:s.quality||'',title:s.title||c.name,referrer:!!s.referrer,user_agent:!!s.user_agent,browserCompatible:url.startsWith('https:')&&!s.referrer&&!s.user_agent})}return {channels:[...map.values()],unmatched}}
+function filter(rows,q='',country='',category='',available=true){q=q.toLowerCase();return rows.filter(c=>(!available||c.streams.length)&&(!country||c.country===country)&&(!category||c.categories.includes(category))&&(!q||[c.id,c.name,...c.categories].join(' ').toLowerCase().includes(q)))}
+function m3u(rows){const clean=s=>String(s).replace(/[\r\n"]/g,'');return '#EXTM3U\n'+rows.flatMap(c=>c.streams.filter(s=>s.browserCompatible).map(s=>'#EXTINF:-1 tvg-id="'+clean(c.id)+'" group-title="'+clean(c.country)+'",'+clean(c.name)+'\n'+s.url)).join('\n')+'\n'}
+const api={join,filter,m3u,safe};if(typeof module!=='undefined')module.exports=api;else root.IPTVCore=api;
+})(typeof window!=='undefined'?window:globalThis);
